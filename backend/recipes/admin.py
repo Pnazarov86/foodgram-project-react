@@ -1,8 +1,5 @@
 from django.contrib import admin
-from .models import (
-    Ingredient, Tag, Recipe,
-    Favorites, Shopping_cart
-)
+from .models import (Ingredient, Tag, Recipe, Favorites, ShoppingCart)
 
 
 @admin.register(Ingredient)
@@ -35,8 +32,8 @@ class FavoritesAdmin(admin.ModelAdmin):
     empty_value_display = '-пусто-'
 
 
-@admin.register(Shopping_cart)
-class Shopping_listAdmin(admin.ModelAdmin):
+@admin.register(ShoppingCart)
+class ShoppingCartAdmin(admin.ModelAdmin):
     """Админка списка покупок."""
     list_display = ('user', 'recipe',)
     empty_value_display = '-пусто-'

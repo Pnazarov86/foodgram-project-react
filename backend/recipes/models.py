@@ -64,7 +64,7 @@ class Recipe(models.Model):
     text = models.TextField(verbose_name='Описание блюда')
     ingredients = models.ManyToManyField(
         Ingredient,
-        through='IngredientRecipe',
+        through='QuantityOfIngredients',
         related_name='recipes',
         verbose_name='Ингредиенты',
     )
@@ -91,7 +91,7 @@ class Recipe(models.Model):
         return self.name
 
 
-class IngredientRecipe(models.Model):
+class QuantityOfIngredients(models.Model):
     """Количество ингредиентов."""
     ingredient = models.ForeignKey(
         Ingredient,
@@ -137,7 +137,7 @@ class Favorites(models.Model):
         return f'{self.user} добавил {self.recipe} в Избранное'
 
 
-class Shopping_cart(models.Model):
+class ShoppingCart(models.Model):
     """Модель списка покупок."""
     user = models.ForeignKey(
         User,
