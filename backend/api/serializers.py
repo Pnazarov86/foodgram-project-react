@@ -106,14 +106,14 @@ class RecipeСreateSerializer(serializers.ModelSerializer):
     author = CustomUserSerializer(read_only=True)
     ingredients = IngredientRecipeSerializer(many=True)
     image = Base64ImageField(required=True)
-    is_favorited = SerializerMethodField(read_only=True)
-    is_in_shopping_cart = SerializerMethodField(read_only=True)
+    # is_favorited = SerializerMethodField(read_only=True)
+    # is_in_shopping_cart = SerializerMethodField(read_only=True)
 
     class Meta:
         model = Recipe
         fields = (
-            'id', 'tags', 'author', 'ingredients', 'is_favorited',
-            'is_in_shopping_cart', 'name', 'image', 'text', 'cooking_time',
+            'id', 'tags', 'author', 'ingredients',
+            'name', 'image', 'text', 'cooking_time',
         )
 
     def validate(self, data):
@@ -140,8 +140,8 @@ class RecipeСreateSerializer(serializers.ModelSerializer):
         for ingredient in ingredients:
             IngredientRecipe.objects.create(
                 recipe=recipe,
-                ingredient_id=ingredient.get('id'),
-                amount=ingredient.get('amount'),
+                ingredient_id=ingredient['id'],
+                amount=ingredient['amount'],
             )
 
     def create(self, validated_data):
