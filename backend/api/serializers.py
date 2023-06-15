@@ -168,24 +168,26 @@ class RecipeСreateSerializer(serializers.ModelSerializer):
         ).data
 
 
-# class RecipeFollowSerializer(serializers.ModelSerializer):
-#     """Сериализатор рецептов в подписках."""
+class RecipeFollowSerializer(serializers.ModelSerializer):
+    """Сериализатор рецептов в подписках."""
 
-#     class Meta:
-#         model = Recipe
-#         fields = ('id', 'name', 'image', 'cooking_time')
+    class Meta:
+        model = Recipe
+        fields = ('id', 'name', 'image', 'cooking_time')
 
 
 class FollowSerializer(serializers.ModelSerializer):
     """Сериализатор подписки."""
     is_subscribed = serializers.SerializerMethodField()
+    recipes = RecipeFollowSerializer(many=True, read_only=True)
+    recipes_count = serializers.SerializerMethodField()
 
     class Meta:
         model = User
         fields = (
             'email', 'id', 'username',
             'first_name', 'last_name',
-            'is_subscribed',
+            'is_subscribed', 'recipes', 'recipes_count'
         )
         read_only_fields = ('email', 'username', 'first_name', 'last_name')
 
@@ -194,6 +196,9 @@ class FollowSerializer(serializers.ModelSerializer):
         if not user:
             return False
         return Follow.objects.filter(user=user, author=obj).exists()
+
+    def get_recipes_count(self, obj):
+        return obj.recipes.count()
 
     def validate(self, data):
         user = self.context.get('request').user
