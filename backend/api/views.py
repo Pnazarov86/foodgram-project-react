@@ -1,10 +1,9 @@
 from rest_framework import filters, permissions, viewsets
-from .mixins import CreateDestroyViewSet
 from .filters import RecipeFilter
-from recipes.models import (Favorites, Ingredient, Recipe, ShoppingCart, Tag)
+from recipes.models import (Ingredient, Recipe, Tag)
 from .serializers import (
     IngredientSerializer, TagSerializer, RecipeСreateSerializer,
-    FavoritesSerializer, ShoppingCartSerializer, RecipeReadSerializer
+    RecipeReadSerializer
 )
 from .permissions import IsAdminOrReadOnly, IsAuthorOrAdminReadOnly
 from rest_framework.pagination import LimitOffsetPagination
@@ -43,15 +42,3 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if self.request.method in permissions.SAFE_METHODS:
             return RecipeReadSerializer
         return RecipeСreateSerializer
-
-
-class FavoritesViewSet(CreateDestroyViewSet):
-    """Вьюсет избранного."""
-    queryset = Favorites.objects.all()
-    serializer_class = FavoritesSerializer
-
-
-class ShoppingCartViewSet(CreateDestroyViewSet):
-    """Вьюсет списка покупок."""
-    queryset = ShoppingCart.objects.all()
-    serializer_class = ShoppingCartSerializer

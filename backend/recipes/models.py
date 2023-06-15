@@ -1,5 +1,4 @@
 from django.db import models
-from django.core.validators import MinValueValidator
 from users.models import User
 
 
@@ -46,7 +45,7 @@ class Tag(models.Model):
 
 
 class Recipe(models.Model):
-    """"Модель рецептов."""
+    """Модель рецептов."""
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -64,7 +63,7 @@ class Recipe(models.Model):
     text = models.TextField(verbose_name='Описание блюда')
     ingredients = models.ManyToManyField(
         Ingredient,
-        through='QuantityOfIngredients',
+        through='IngredientRecipe',
         related_name='recipes',
         verbose_name='Ингредиенты',
     )
@@ -74,8 +73,7 @@ class Recipe(models.Model):
         verbose_name='Теги',
     )
     cooking_time = models.IntegerField(
-        validators=[MinValueValidator(1, 'Минимальое время - 1 мин.')],
-        verbose_name='Время приготовления (в минутах)',
+        verbose_name='Время приготовления, мин.',
     )
     pub_date = models.DateTimeField(
         auto_now_add=True,
@@ -91,30 +89,25 @@ class Recipe(models.Model):
         return self.name
 
 
-class QuantityOfIngredients(models.Model):
+class IngredientRecipe(models.Model):
     """Количество ингредиентов."""
     ingredient = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
-        # related_name='ingredients',
         verbose_name='Ингредиент'
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        # related_name='ingredients',
         verbose_name='Рецепт'
     )
-    quantity = models.IntegerField(
-        validators=[MinValueValidator(1, 'Минимальое количество - 1')],
-        verbose_name='Количество',
-    )
+    amount = models.IntegerField(verbose_name='Количество')
 
     def __str__(self):
-        return f'{self.recipe}: {self.ingredient} - {self.quantity}'
+        return f'{self.recipe}: {self.ingredient} - {self.amount}'
 
 
-class Favorites(models.Model):
+class Favorite(models.Model):
     """Модель избранного."""
     user = models.ForeignKey(
         User,
