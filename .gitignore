@@ -132,4 +132,4 @@ dmypy.json
 .idea
 # папки со статикой и медиа
 static/
-backend/media
+backend/media/
