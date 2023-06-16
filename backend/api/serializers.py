@@ -4,7 +4,7 @@ from rest_framework import serializers
 from django.core.files.base import ContentFile
 from users.models import Follow, User
 from recipes.models import (
-    Ingredient, IngredientRecipe, Recipe, Tag
+    Favorite, Ingredient, IngredientRecipe, Recipe, ShoppingCart, Tag
     )
 from users.serializers import CustomUserSerializer
 from rest_framework.fields import SerializerMethodField
@@ -106,8 +106,6 @@ class RecipeСreateSerializer(serializers.ModelSerializer):
     author = CustomUserSerializer(read_only=True)
     ingredients = IngredientRecipeSerializer(many=True)
     image = Base64ImageField(required=True)
-    # is_favorited = SerializerMethodField(read_only=True)
-    # is_in_shopping_cart = SerializerMethodField(read_only=True)
 
     class Meta:
         model = Recipe
@@ -203,8 +201,44 @@ class FollowSerializer(serializers.ModelSerializer):
     def validate(self, data):
         user = self.context.get('request').user
         author = self.instance
-        if Follow.objects.filter(user=user, author=author).exists():
+        if Follow.objects.filter(
+            user=self.context.get('request').user,
+            author=self.instance
+        ).exists():
             raise ValidationError('Вы уже подписаны.')
         if user == author:
             raise ValidationError('Нельзя подписаться на себя!')
         return data
+
+
+class FavoriteSerializer(serializers.ModelSerializer):
+    """Сериализатор избранного."""
+
+    class Meta:
+        model = Recipe
+        fields = ('id', 'name', 'image', 'cooking_time')
+        read_only_fields = ('id', 'name', 'image', 'cooking_time')
+
+    def validate(self, data):
+        if Favorite.objects.filter(
+            user=self.context.get('request').user,
+            recipe=self.instance
+        ).exists():
+            raise ValidationError('Рецепт уже в избранном!')
+        return data
+
+
+class ShoppingCartSerializer(serializers.ModelSerializer):
+    """Сериализатор списка покупок."""
+    class Meta:
+        model = Recipe
+        fields = ('id', 'name', 'image', 'cooking_time')
+        read_only_fields = ('id', 'name', 'image', 'cooking_time')
+
+        def validate(self, data):
+            if ShoppingCart.objects.filter(
+                user=self.context.get('request').user,
+                recipe=self.instance
+            ).exists():
+                raise ValidationError('Рецепт уже в избранном!')
+            return data
