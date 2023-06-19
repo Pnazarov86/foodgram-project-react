@@ -1,39 +1,36 @@
 version: '3.3'
+
 volumes:
   pg_data:
   static:
   media:
+
 services:
   db:
     image: postgres:13
     restart: always
-    volumes:
-      - pg_data:/var/lib/postgresql/data
     env_file: 
       - ./.env
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
   backend:
-    build: 
-      context: ../backend
-      dockerfile: Dockerfile
+    image: pnazarov86/foodgram_backend
     restart: always
+    env_file: 
+      - ./.env
     volumes:
       - static:/app/static
       - media:/app/media
-    env_file: 
-      - ./.env
-    depends_on:
-      - db
+      # - ../backend:/app (уточнить у наставника, как заставить работать.)
+
   frontend:
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
+    image: pnazarov86/frontend_backend
     volumes:
       - ../frontend/:/app/result_build/
-    depends_on:
-      - db
+  
   nginx:
     image: nginx:1.19.3
-    restart: always
     ports:
       - "80:80"
     volumes:
@@ -42,7 +39,4 @@ services:
       - ../docs/:/usr/share/nginx/html/api/docs/
       - static:/static
       - media:/media
-    depends_on:
-      - backend
-      - frontend
-
+    restart: always

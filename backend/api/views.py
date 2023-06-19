@@ -1,17 +1,20 @@
-from rest_framework import filters, permissions, viewsets, status
-from .filters import RecipeFilter
-from recipes.models import Favorite, Ingredient, Recipe, ShoppingCart, Tag
-from .serializers import (
-    FavoriteSerializer, IngredientSerializer, ShoppingCartSerializer,
-    TagSerializer, RecipeReadSerializer, RecipeСreateSerializer
-)
-from .permissions import IsAdminOrReadOnly, IsAuthorOrAdminReadOnly
-from rest_framework.pagination import LimitOffsetPagination
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.decorators import action
+from django.db.models import Sum
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
+from recipes.models import (Favorite, Ingredient, IngredientRecipe, Recipe,
+                            ShoppingCart, Tag)
+from rest_framework import filters, permissions, status, viewsets
+from rest_framework.decorators import action
+from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+
+from .filters import RecipeFilter
+from .permissions import IsAdminOrReadOnly, IsAuthorOrAdminReadOnly
+from .serializers import (FavoriteSerializer, IngredientSerializer,
+                          RecipeReadSerializer, RecipeСreateSerializer,
+                          ShoppingCartSerializer, TagSerializer)
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
@@ -94,3 +97,27 @@ class RecipeViewSet(viewsets.ModelViewSet):
             )
             shopping_cart.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(
+        detail=False,
+        methods=('get',),
+        permission_classes=(IsAuthenticated,)
+    )
+    def download_shopping_cart(self, request):
+        ingredients = IngredientRecipe.objects.filter(
+            recipe__shopping_cart__user=request.user
+        ).values(
+            'ingredient__name',
+            'ingredient__measurement_unit'
+        ).annotate(amount=Sum('amount'))
+        filename = 'shopping_list.txt'
+        shopping_list = 'Список покупок:\n\n'
+        shopping_list += '\n'.join([
+            f' {ingredient["ingredient__name"]} '
+            f'({ingredient["ingredient__measurement_unit"]})'
+            f' - {ingredient["amount"]}'
+            for ingredient in ingredients
+        ])
+        response = HttpResponse(shopping_list, content_type='text/plain')
+        response['Content-Disposition'] = f'attachment; filename={filename}'
+        return response
