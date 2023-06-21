@@ -1,4 +1,3 @@
-# praktikum_new_diplom
 # Проект - «Продуктовый помощник» (FOODGRAM)
 
 ### Описание
