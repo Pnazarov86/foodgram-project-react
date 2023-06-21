@@ -9,7 +9,7 @@ class IsAdminOrReadOnly(permissions.BasePermission):
                 or request.user.is_staff)
 
 
-class IsAuthorOrAdminReadOnly(permissions.BasePermission):
+class IsAuthorOrAdminOrReadOnly(permissions.BasePermission):
     """Права автора и админиа."""
 
     def has_object_permission(self, request, view, obj):

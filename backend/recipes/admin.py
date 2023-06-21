@@ -7,6 +7,7 @@ from .models import Favorite, Ingredient, Recipe, ShoppingCart, Tag
 class IngredientAdmin(admin.ModelAdmin):
     """Админка ингредиентов."""
     list_display = ('name', 'measurement_unit')
+    search_fields = ('name',)
     list_filter = ('name',)
     empty_value_display = '-пусто-'
 
@@ -21,9 +22,13 @@ class TagAdmin(admin.ModelAdmin):
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     """Админка рецептов."""
-    list_display = ('id', 'name', 'author',)
+    list_display = ('id', 'name', 'author', 'favorite_count')
     list_filter = ('name', 'author', 'tags',)
     empty_value_display = '-пусто-'
+
+    def favorite_count(self, obj):
+        return Favorite.objects.filter(recipe=obj).count()
+    
 
 
 @admin.register(Favorite)

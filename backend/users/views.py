@@ -3,7 +3,6 @@ from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
-from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
@@ -12,10 +11,9 @@ from .serializers import CustomUserSerializer
 
 
 class FollowListViewSet(viewsets.ReadOnlyModelViewSet):
-    """Вьюсет списка подписчиков."""
+    """Вьюсет списка подписок."""
     serializer_class = FollowSerializer
     permission_classes = [IsAuthenticated]
-    pagination_class = LimitOffsetPagination
 
     def get_queryset(self):
         return User.objects.filter(following__user=self.request.user)
@@ -25,7 +23,6 @@ class CustomUserViewSet(UserViewSet):
     """Вьюсет пользователей."""
     queryset = User.objects.all()
     serializer_class = CustomUserSerializer
-    pagination_class = LimitOffsetPagination
 
     @action(
         detail=True,

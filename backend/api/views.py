@@ -4,14 +4,13 @@ from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from recipes.models import (Favorite, Ingredient, IngredientRecipe, Recipe,
                             ShoppingCart, Tag)
-from rest_framework import filters, permissions, status, viewsets
+from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
-from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from .filters import RecipeFilter
-from .permissions import IsAdminOrReadOnly, IsAuthorOrAdminReadOnly
+from .filters import IngredientFilter, RecipeFilter
+from .permissions import IsAdminOrReadOnly, IsAuthorOrAdminOrReadOnly
 from .serializers import (FavoriteSerializer, IngredientSerializer,
                           RecipeReadSerializer, RecipeСreateSerializer,
                           ShoppingCartSerializer, TagSerializer)
@@ -22,23 +21,24 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     permission_classes = [IsAdminOrReadOnly]
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['^name']
+    pagination_class = None
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = IngredientFilter
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
     """Вьюсет тегов."""
     queryset = Tag.objects.all()
-    permission_classes = [IsAdminOrReadOnly]
     serializer_class = TagSerializer
+    permission_classes = [IsAdminOrReadOnly]
+    pagination_class = None
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
     """Вьюсет рецептов."""
     queryset = Recipe.objects.all()
     serializer_class = RecipeСreateSerializer
-    permission_classes = [IsAuthorOrAdminReadOnly]
-    pagination_class = LimitOffsetPagination
+    permission_classes = [IsAuthorOrAdminOrReadOnly]
     filter_backends = [DjangoFilterBackend]
     filterset_class = RecipeFilter
 
@@ -113,9 +113,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
         filename = 'shopping_list.txt'
         shopping_list = 'Список покупок:\n\n'
         shopping_list += '\n'.join([
-            f' {ingredient["ingredient__name"]} '
-            f'({ingredient["ingredient__measurement_unit"]})'
-            f' - {ingredient["amount"]}'
+            f'{ingredient["ingredient__name"]} '
+            f'- {ingredient["amount"]} '
+            f'{ingredient["ingredient__measurement_unit"]}.'
             for ingredient in ingredients
         ])
         response = HttpResponse(shopping_list, content_type='text/plain')
