@@ -22,8 +22,7 @@ services:
     volumes:
       - static:/app/static
       - media:/app/media
-      # - ../backend:/app (уточнить у наставника, как заставить работать.)
-
+      
   frontend:
     image: pnazarov86/frontend_backend
     volumes:

@@ -28,7 +28,6 @@ class RecipeAdmin(admin.ModelAdmin):
 
     def favorite_count(self, obj):
         return Favorite.objects.filter(recipe=obj).count()
-    
 
 
 @admin.register(Favorite)

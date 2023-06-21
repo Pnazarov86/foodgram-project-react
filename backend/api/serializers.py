@@ -3,13 +3,14 @@ import base64
 import webcolors
 from django.core.files.base import ContentFile
 from django.db.models import F
-from recipes.models import (Favorite, Ingredient, IngredientRecipe, Recipe,
-                            ShoppingCart, Tag)
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import SerializerMethodField
 from users.models import Follow, User
 from users.serializers import CustomUserSerializer
+from recipes.models import (
+    Favorite, Ingredient, IngredientRecipe, Recipe, ShoppingCart, Tag
+)
 
 
 class Hex2NameColor(serializers.Field):
