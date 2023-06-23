@@ -1,4 +1,3 @@
-from api.serializers import FollowSerializer
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
 from rest_framework import status, viewsets
@@ -8,6 +7,7 @@ from rest_framework.response import Response
 
 from .models import Follow, User
 from .serializers import CustomUserSerializer
+from api.serializers import FollowSerializer
 
 
 class FollowListViewSet(viewsets.ReadOnlyModelViewSet):
@@ -41,10 +41,10 @@ class CustomUserViewSet(UserViewSet):
             serializer.is_valid(raise_exception=True)
             Follow.objects.create(user=user, author=author)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        if request.method == 'DELETE':
-            subscribe = get_object_or_404(
-                Follow,
-                user=user,
-                author=author)
-            subscribe.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+        subscribe = get_object_or_404(
+            Follow,
+            user=user,
+            author=author
+        )
+        subscribe.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

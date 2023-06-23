@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models import UniqueConstraint
+
 from users.models import User
 
 
@@ -103,6 +105,14 @@ class IngredientRecipe(models.Model):
     )
     amount = models.IntegerField(verbose_name='Количество')
 
+    class Meta:
+        constraints = [
+            UniqueConstraint(
+                fields=['ingredient', 'recipe'],
+                name='unique_ingredients_recipe'
+            )
+        ]
+
     def __str__(self):
         return f'{self.recipe}: {self.ingredient} - {self.amount}'
 
@@ -125,6 +135,12 @@ class Favorite(models.Model):
     class Meta:
         verbose_name = 'Избранное'
         verbose_name_plural = 'Избранное'
+        constraints = [
+            UniqueConstraint(
+                fields=['user', 'recipe'],
+                name='unique_favorite'
+            )
+        ]
 
     def __str__(self):
         return f'{self.user} добавил {self.recipe} в Избранное'
@@ -148,6 +164,12 @@ class ShoppingCart(models.Model):
     class Meta:
         verbose_name = 'Список покупок'
         verbose_name_plural = 'Список покупок'
+        constraints = [
+            UniqueConstraint(
+                fields=['user', 'recipe'],
+                name='unique_shopping_cart'
+            )
+        ]
 
     def __str__(self):
         return f'{self.user} добавил {self.recipe} в cписок покупок'
