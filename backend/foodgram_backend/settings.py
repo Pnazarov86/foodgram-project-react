@@ -7,7 +7,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 
 DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['158.160.31.152', '127.0.0.1', 'localhost', 'foodgram23.ddns.net']
 
 AUTH_USER_MODEL = 'users.User'
 
