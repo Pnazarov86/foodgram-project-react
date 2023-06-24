@@ -81,7 +81,6 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         passphrase: ${{ secrets.SSH_PASSPHRASE }}
         script: |
-          cd foodgram
           sudo docker compose down
           echo DB_ENGINE=${{ secrets.DB_ENGINE }} > .env
           echo POSTGRES_DB=${{ secrets.POSTGRES_DB }} >> .env
