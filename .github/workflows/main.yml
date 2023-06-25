@@ -81,6 +81,8 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         passphrase: ${{ secrets.SSH_PASSPHRASE }}
         script: |
+          cd foodgram
+          sudo docker compose pull
           sudo docker compose down
           echo DB_ENGINE=${{ secrets.DB_ENGINE }} > .env
           echo POSTGRES_DB=${{ secrets.POSTGRES_DB }} >> .env
@@ -91,7 +93,7 @@ jobs:
           echo DB_PORT=${{ secrets.DB_PORT }} >> .env
           sudo docker compose up -d
           sudo docker compose exec backend python manage.py migrate
-          sudo docker compose exec backend python manage.py collectstatic
+          sudo docker compose exec backend python manage.py collectstatic --noinput
 
   send_message:
     runs-on: ubuntu-latest
