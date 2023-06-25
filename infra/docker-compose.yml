@@ -20,7 +20,6 @@ services:
     volumes:
       - static:/app/static
       - media:/app/media
-      - ../backend:/app
     env_file: 
       - ./.env
     depends_on:
