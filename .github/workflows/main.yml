@@ -82,7 +82,7 @@ jobs:
         username: ${{ secrets.USER }}
         key: ${{ secrets.SSH_KEY }}
         passphrase: ${{ secrets.SSH_PASSPHRASE }}
-        source: "infra/"
+        source: "./infra/"
         target: "foodgram"
     - name: Executing remote ssh commands to deploy
       uses: appleboy/ssh-action@master
@@ -103,7 +103,7 @@ jobs:
           echo DB_PORT=${{ secrets.DB_PORT }} >> .env
           sudo docker compose up -d
           sudo docker compose exec backend python manage.py migrate
-          # sudo docker compose exec backend python manage.py collectstatic --noinput
+          sudo docker compose exec backend python manage.py collectstatic --noinput
 
   send_message:
     runs-on: ubuntu-latest
