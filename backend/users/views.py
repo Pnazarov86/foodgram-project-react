@@ -7,6 +7,7 @@ from rest_framework.response import Response
 
 from .models import Follow, User
 from .serializers import CustomUserSerializer
+from api.pagination import CustomPagination
 from api.serializers import FollowSerializer
 
 
@@ -14,6 +15,7 @@ class FollowListViewSet(viewsets.ReadOnlyModelViewSet):
     """Вьюсет списка подписок."""
     serializer_class = FollowSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = CustomPagination
 
     def get_queryset(self):
         return User.objects.filter(following__user=self.request.user)
@@ -23,6 +25,7 @@ class CustomUserViewSet(UserViewSet):
     """Вьюсет пользователей."""
     queryset = User.objects.all()
     serializer_class = CustomUserSerializer
+    pagination_class = CustomPagination
 
     @action(
         detail=True,

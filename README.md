@@ -9,7 +9,7 @@
  - Django REST framework 3.12
  - Docker
 
-## Проект запустится на адресе https://foodgram23.ddns.net
+## Проект доступен по адресу: https://foodgram23.ddns.net
 **Авторизация на сайте:**  
 ***E-mail:*** admin@foodgram.ru  
 ***Пароль:*** nps121609

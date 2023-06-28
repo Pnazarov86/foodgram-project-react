@@ -51,25 +51,25 @@ class RecipeReadSerializer(serializers.ModelSerializer):
             'is_in_shopping_cart', 'name', 'image', 'text', 'cooking_time',
         )
 
-    def get_ingredients(self, obj):
-        return obj.ingredients.values(
+    def get_ingredients(self, recipe):
+        return recipe.ingredients.values(
             'id',
             'name',
             'measurement_unit',
             amount=F('ingredientrecipe__amount')
         )
 
-    def get_is_favorited(self, obj):
+    def get_is_favorited(self, recipe):
         user = self.context.get('request').user
         if not user.is_authenticated:
             return False
-        return user.favorites.filter(recipe=obj).exists()
+        return user.favorites.filter(recipe=recipe).exists()
 
-    def get_is_in_shopping_cart(self, obj):
+    def get_is_in_shopping_cart(self, recipe):
         user = self.context.get('request').user
         if not user.is_authenticated:
             return False
-        return user.shopping_cart.filter(recipe=obj).exists()
+        return user.shopping_cart.filter(recipe=recipe).exists()
 
 
 class RecipeCreateSerializer(serializers.ModelSerializer):
@@ -100,6 +100,8 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             if ingredient in ingredient_list:
                 raise ValidationError('Ингредиенты не должны повторяться.')
             ingredient_list.append(ingredient)
+            if int(ingredient['amount']) < 1:
+                raise ValidationError('Укажите количество ингредиента')
         cooking_time = data['cooking_time']
         if int(cooking_time) < 1:
             raise ValidationError('Укажите время приготовления.')
@@ -150,7 +152,7 @@ class RecipeMiniSerializer(serializers.ModelSerializer):
 class FollowSerializer(serializers.ModelSerializer):
     """Сериализатор подписки."""
     is_subscribed = serializers.SerializerMethodField()
-    recipes = RecipeMiniSerializer(many=True, read_only=True)
+    recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
 
     class Meta:
@@ -162,14 +164,22 @@ class FollowSerializer(serializers.ModelSerializer):
         )
         read_only_fields = ('email', 'username', 'first_name', 'last_name')
 
-    def get_is_subscribed(self, obj):
+    def get_is_subscribed(self, author):
         user = self.context.get('request').user
         if not user.is_authenticated:
             return False
-        return Follow.objects.filter(user=user, author=obj).exists()
+        return Follow.objects.filter(user=user, author=author).exists()
 
-    def get_recipes_count(self, obj):
-        return Recipe.objects.filter(author=obj).count()
+    def get_recipes(self, author):
+        request = self.context['request']
+        recipes_limit = request.GET.get('recipes_limit')
+        recipes = Recipe.objects.filter(author=author)
+        if recipes_limit:
+            recipes = recipes[:int(recipes_limit)]
+        return RecipeMiniSerializer(recipes, many=True).data
+
+    def get_recipes_count(self, author):
+        return Recipe.objects.filter(author=author).count()
 
     def validate(self, data):
         user = self.context.get('request').user

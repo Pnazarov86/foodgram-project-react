@@ -26,8 +26,8 @@ class RecipeAdmin(admin.ModelAdmin):
     list_filter = ('name', 'author', 'tags',)
     empty_value_display = '-пусто-'
 
-    def favorite_count(self, obj):
-        return Favorite.objects.filter(recipe=obj).count()
+    def favorite_count(self, recipe):
+        return Favorite.objects.filter(recipe=recipe).count()
 
 
 @admin.register(Favorite)
