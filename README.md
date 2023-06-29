@@ -9,16 +9,6 @@
  - Django REST framework 3.12
  - Docker
 
-## Проект доступен по адресу: https://foodgram23.ddns.net
-**Авторизация на сайте:**  
-***E-mail:*** admin@foodgram.ru  
-***Пароль:*** nps121609
-
-**Админка:**  
-***Логин:*** admin  
-***Пароль:*** nps121609
-
-
 # Запуск проекта в dev-режиме на Linux:
  - Клонируйте репозиторий
  - Заполните файл .env секретами, согласно примеру из папки infra
@@ -42,7 +32,8 @@ sudo docker compose exec backend python manage.py createsuperuser
 ```
 sudo docker compose exec backend python manage.py collectstatic --noinput
 ``` 
-Проект запустится на адресе http://localhost
+Проект запустится на адресе http://localhost  
+Спецификация api: http://localhost/api/docs/redoc.html
 
 ### Автор 
 Пётр Назаров  
