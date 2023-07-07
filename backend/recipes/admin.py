@@ -1,6 +1,14 @@
 from django.contrib import admin
+from django.contrib.admin import TabularInline
 
-from .models import Favorite, Ingredient, Recipe, ShoppingCart, Tag
+from .models import (
+    Favorite,
+    Ingredient,
+    IngredientRecipe,
+    Recipe,
+    ShoppingCart,
+    Tag,
+)
 
 
 @admin.register(Ingredient)
@@ -19,11 +27,18 @@ class TagAdmin(admin.ModelAdmin):
     empty_value_display = '-пусто-'
 
 
+class IngredientRecipeInline(TabularInline):
+    model = IngredientRecipe
+    min_num = 1
+    extra = 1
+
+
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     """Админка рецептов."""
     list_display = ('id', 'name', 'author', 'favorite_count')
     list_filter = ('name', 'author', 'tags',)
+    inlines = (IngredientRecipeInline,)
     empty_value_display = '-пусто-'
 
     def favorite_count(self, recipe):

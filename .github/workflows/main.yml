@@ -93,8 +93,8 @@ jobs:
         passphrase: ${{ secrets.SSH_PASSPHRASE }}
         script: |
           cd foodgram/infra
-          sudo docker compose stop
-          sudo docker system prune -a
+          sudo docker compose pull
+          sudo docker compose down
           echo DB_ENGINE=${{ secrets.DB_ENGINE }} > .env
           echo POSTGRES_DB=${{ secrets.POSTGRES_DB }} >> .env
           echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
