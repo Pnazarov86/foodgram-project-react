@@ -16,7 +16,7 @@
 ``` 
 docker-compose up
 ```
- - Выполнити миграции:
+ - Выполните миграции:
 ```
 sudo docker compose exec backend python manage.py migrate
 ```
